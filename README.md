@@ -1,8 +1,8 @@
-This directory is where you'll write all of your code!
+## Software Product Sprint Spring 2021 Team 2 ##
 
-By default it contains a barebones portfolio web app. To run a local server,
-execute this command:
+
+To run a local server, execute this command:
 
 ```
-mvn package exec:java
+`mvn package exec:java`
 ```
