@@ -27,6 +27,20 @@
       <version>4.0.1</version>
     </dependency>
 
+    <!--storage-->
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-storage</artifactId>
+      <version>1.113.0</version>
+    </dependency>
+
+    <!--datastore-->
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-datastore</artifactId>
+      <version>1.104.0</version>
+    </dependency>
+
     <!-- Jetty -->
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
