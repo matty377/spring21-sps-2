@@ -37,3 +37,5 @@ public class ImageFormServlet extends HttpServlet {
             response.sendRedirect("/index.html"); //Redirects back home for now, will change to list of images later.
     }
 }
+
+
