@@ -1,9 +1,43 @@
-#content {
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
+/* CSS Document */
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+body {
+	font-family: 'Roboto', sans-serif;
 }
 
-#greeting-container {
-  margin-top: 20px;
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+nav ul {
+	background-color:lightgray;
+	align-content:center;
+}
+nav li {
+	float: left;
+}
+
+nav li a {
+	display: block;
+	color:black;
+	text-align:center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+nav li a:hover {
+	background-color:gray;
+}
+
+.currentPage {
+	background-color:darkgray
+}
+
+#container {
+	padding-top:10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
 }
