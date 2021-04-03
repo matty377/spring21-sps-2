@@ -13,11 +13,24 @@ import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.FullEntity;
 import com.google.cloud.datastore.KeyFactory;
+import com.google.datastore.v1.Value;
+import com.google.datastore.v1.ArrayValue;
+
+import com.google.cloud.vision.v1.AnnotateImageRequest;
+import com.google.cloud.vision.v1.AnnotateImageResponse;
+import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
+import com.google.cloud.vision.v1.EntityAnnotation;
+import com.google.cloud.vision.v1.Feature;
+import com.google.cloud.vision.v1.Image;
+import com.google.cloud.vision.v1.ImageAnnotatorClient;
+import com.google.protobuf.ByteString;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -25,6 +38,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
 
 @WebServlet("/upload")
 @MultipartConfig()
@@ -45,9 +59,14 @@ public class ImageFormServlet extends HttpServlet {
             String fileName = filePart.getSubmittedFileName();
             
             InputStream fileInputStream = filePart.getInputStream();
+            byte[] imageBytes = fileInputStream.readAllBytes();
 
             String uploadedImageUrl = uploadToCloudStorage(fileName, fileInputStream);
             PrintWriter out = response.getWriter();
+
+            List<EntityAnnotation> imageLabels = getImageLabels(imageBytes);
+
+            List<Value> tagValueList = imageLabels.stream().map(string -> Value.newBuilder().setStringValue(string.getDescription()).build());
             
             Datastore datastore = DatastoreOptions.getDefaultInstance().getService(); //get the instance of the Datastore class
             KeyFactory keyFactory = datastore.newKeyFactory().setKind("Image"); //creates a keyFactory with a kind called "Task" and the name keyFactory
@@ -55,6 +74,7 @@ public class ImageFormServlet extends HttpServlet {
                 Entity.newBuilder(keyFactory.newKey()) //give a key to the Entity
                 .set("message", message)//
                 .set("Url", uploadedImageUrl)
+                .set("tags", ArrayValue.newBuilder().setValues(tagValueList) )
                 .build();
             datastore.put(imgEntity);//store this entity in datastore
 
@@ -74,6 +94,7 @@ public class ImageFormServlet extends HttpServlet {
         return value;
     }
 
+
     private static String uploadToCloudStorage(String fileName, InputStream fileInputStream){
 
         String projectId = "spring21-sps-2";
@@ -88,4 +109,28 @@ public class ImageFormServlet extends HttpServlet {
 
         return blob.getMediaLink();
     }
+
+    private List<EntityAnnotation> getImageLabels(byte[] imageBytes) throws IOException {
+    ByteString byteString = ByteString.copyFrom(imageBytes);
+    Image image = Image.newBuilder().setContent(byteString).build();
+
+    Feature feature = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
+    AnnotateImageRequest request =
+        AnnotateImageRequest.newBuilder().addFeatures(feature).setImage(image).build();
+    List<AnnotateImageRequest> requests = new ArrayList<>();
+    requests.add(request);
+
+    ImageAnnotatorClient client = ImageAnnotatorClient.create();
+    BatchAnnotateImagesResponse batchResponse = client.batchAnnotateImages(requests);
+    client.close();
+    List<AnnotateImageResponse> imageResponses = batchResponse.getResponsesList();
+    AnnotateImageResponse imageResponse = imageResponses.get(0);
+
+    if (imageResponse.hasError()) {
+      System.err.println("Error getting image labels: " + imageResponse.getError().getMessage());
+      return null;
+    }
+
+    return imageResponse.getLabelAnnotationsList();
+  }
 }
