@@ -1,5 +1,6 @@
 package com.google.sps.servlets;
 
+import static java.util.stream.Collectors.toList;
 
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
@@ -66,7 +67,12 @@ public class ImageFormServlet extends HttpServlet {
 
             List<EntityAnnotation> imageLabels = getImageLabels(imageBytes);
 
-            List<Value> tagValueList = imageLabels.stream().map(string -> Value.newBuilder().setStringValue(string.getDescription()).build());
+            List<Value> tagValueList = imageLabels.stream()
+                .map(entityAnnotation -> Value.newBuilder()
+                    .setStringValue(entityAnnotation.getDescription()).build())
+                .collect(toList());
+            
+            // imageLabels.stream().map(string -> Value.newBuilder().setStringValue(string.getDescription()).build());
             
             Datastore datastore = DatastoreOptions.getDefaultInstance().getService(); //get the instance of the Datastore class
             KeyFactory keyFactory = datastore.newKeyFactory().setKind("Image"); //creates a keyFactory with a kind called "Task" and the name keyFactory
@@ -74,7 +80,8 @@ public class ImageFormServlet extends HttpServlet {
                 Entity.newBuilder(keyFactory.newKey()) //give a key to the Entity
                 .set("message", message)//
                 .set("Url", uploadedImageUrl)
-                .set("tags", ArrayValue.newBuilder().setValues(tagValueList) )
+                .set("tags", Value.newBuilder().setArrayValue(
+                    ArrayValue.newBuilder().setValues(tagValueList)).build())
                 .build();
             datastore.put(imgEntity);//store this entity in datastore
 
