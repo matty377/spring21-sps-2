@@ -17,7 +17,6 @@ import com.google.cloud.datastore.KeyFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -37,11 +36,8 @@ public class ImageFormServlet extends HttpServlet {
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, IOException {
-            //UUID uuid = UUID.randomUUID(); //This is a randomly generated ID for the image
-
             String message = getParameter(request, "message", ""); 
             Part filePart = request.getPart("image");
-            //String fileName = uuid.toString(); //This could be changed later if we have a system for it
             String fileName = filePart.getSubmittedFileName();
             
             InputStream fileInputStream = filePart.getInputStream();
