@@ -72,8 +72,6 @@ public class ImageFormServlet extends HttpServlet {
                     .setStringValue(entityAnnotation.getDescription()).build())
                 .collect(toList());
             
-            // imageLabels.stream().map(string -> Value.newBuilder().setStringValue(string.getDescription()).build());
-            
             Datastore datastore = DatastoreOptions.getDefaultInstance().getService(); //get the instance of the Datastore class
             KeyFactory keyFactory = datastore.newKeyFactory().setKind("Image"); //creates a keyFactory with a kind called "Task" and the name keyFactory
             FullEntity imgEntity =
@@ -100,8 +98,6 @@ public class ImageFormServlet extends HttpServlet {
     }
         return value;
     }
-
-
     private static String uploadToCloudStorage(String fileName, InputStream fileInputStream){
 
         String projectId = "spring21-sps-2";
@@ -116,28 +112,29 @@ public class ImageFormServlet extends HttpServlet {
 
         return blob.getMediaLink();
     }
-
+  
     private List<EntityAnnotation> getImageLabels(byte[] imageBytes) throws IOException {
-    ByteString byteString = ByteString.copyFrom(imageBytes);
-    Image image = Image.newBuilder().setContent(byteString).build();
+        ByteString byteString = ByteString.copyFrom(imageBytes);
+        Image image = Image.newBuilder().setContent(byteString).build();
 
-    Feature feature = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
-    AnnotateImageRequest request =
-        AnnotateImageRequest.newBuilder().addFeatures(feature).setImage(image).build();
-    List<AnnotateImageRequest> requests = new ArrayList<>();
-    requests.add(request);
+        Feature feature = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
+        AnnotateImageRequest request =
+            AnnotateImageRequest.newBuilder().addFeatures(feature).setImage(image).build();
+        List<AnnotateImageRequest> requests = new ArrayList<>();
+        requests.add(request);
 
-    ImageAnnotatorClient client = ImageAnnotatorClient.create();
-    BatchAnnotateImagesResponse batchResponse = client.batchAnnotateImages(requests);
-    client.close();
-    List<AnnotateImageResponse> imageResponses = batchResponse.getResponsesList();
-    AnnotateImageResponse imageResponse = imageResponses.get(0);
+        ImageAnnotatorClient client = ImageAnnotatorClient.create();
+        BatchAnnotateImagesResponse batchResponse = client.batchAnnotateImages(requests);
+        client.close();
+        List<AnnotateImageResponse> imageResponses = batchResponse.getResponsesList();
+        AnnotateImageResponse imageResponse = imageResponses.get(0);
 
-    if (imageResponse.hasError()) {
-      System.err.println("Error getting image labels: " + imageResponse.getError().getMessage());
-      return null;
+        if (imageResponse.hasError()) {
+          System.err.println("Error getting image labels: " + imageResponse.getError().getMessage());
+          return null;
+        }
+
+        return imageResponse.getLabelAnnotationsList();
     }
 
-    return imageResponse.getLabelAnnotationsList();
-  }
 }
