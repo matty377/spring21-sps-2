@@ -8,13 +8,16 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
+import com.google.cloud.datastore.ListValue;
+import com.google.cloud.datastore.StringValue;
+import com.google.cloud.datastore.Value;
+
 //datastore imports...
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.FullEntity;
 import com.google.cloud.datastore.KeyFactory;
-import com.google.datastore.v1.Value;
 import com.google.datastore.v1.ArrayValue;
 
 import com.google.cloud.vision.v1.AnnotateImageRequest;
@@ -67,9 +70,8 @@ public class ImageFormServlet extends HttpServlet {
 
             List<EntityAnnotation> imageLabels = getImageLabels(imageBytes);
 
-            List<Value> tagValueList = imageLabels.stream()
-                .map(entityAnnotation -> Value.newBuilder()
-                    .setStringValue(entityAnnotation.getDescription()).build())
+            List<Value<String>> tagValueList = imageLabels.stream()
+                .map(entityAnnotation -> StringValue.newBuilder(entityAnnotation.getDescription()).build())
                 .collect(toList());
             
             Datastore datastore = DatastoreOptions.getDefaultInstance().getService(); //get the instance of the Datastore class
@@ -78,8 +80,7 @@ public class ImageFormServlet extends HttpServlet {
                 Entity.newBuilder(keyFactory.newKey()) //give a key to the Entity
                 .set("message", message)//
                 .set("Url", uploadedImageUrl)
-                .set("tags", Value.newBuilder().setArrayValue(
-                    ArrayValue.newBuilder().setValues(tagValueList)).build())
+                .set("tags", ListValue.newBuilder().set(tagValueList).build())
                 .build();
             datastore.put(imgEntity);//store this entity in datastore
 
