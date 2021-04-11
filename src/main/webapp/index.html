@@ -15,7 +15,7 @@
 			<li class="currentPage"><a href="index.html">Image Upload</a></li>
 		</ul>
 	</nav>
-    <div id="container">
+    <div id="container" class="image-uploads">
       <h1>Image Uploads</h1>
       <p>Click <a href="/hello">here</a> to see content created by server code.</p> <!--Could probably make this into a link of galleries of images/messages (MVP)
                                                                                         Or when login is created, to their uploaded images page-->
@@ -26,20 +26,6 @@
                 <br/>
                 <input type="file" accept="image/*" name="image">
                 <button>Upload</button>
-            </form>
-            <form action="/image-analysis" method="POST" enctype="multipart/form-data">
-                <p>Upload an image:</p>
-                <input type="file" name="image">
-                <br/><br/>
-                <button>Submit</button>
-            </form>
-            
-            <p><a href="/images">Click here to see all of the uploaded images!</a></p>
-            <form action="/image-analysis" method="POST" enctype="multipart/form-data">
-                <p>Upload an image:</p>
-                <input type="file" name="image">
-                <br/><br/>
-                <button>Submit</button>
             </form>
       </div>
     </div>

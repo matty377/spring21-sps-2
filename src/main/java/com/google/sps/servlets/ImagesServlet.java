@@ -10,6 +10,7 @@ import com.google.cloud.datastore.FullEntity;
 import com.google.cloud.datastore.KeyFactory;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.datastore.Value;
 import com.google.cloud.datastore.StructuredQuery.OrderBy;
 import com.google.api.client.util.Data;
 import com.google.api.gax.paging.Page;
@@ -41,28 +42,23 @@ public class ImagesServlet extends HttpServlet {
         Page<Blob> blobs = bucket.list();
         
 
-        for (Blob blob : blobs.iterateAll()){
-            String imgTag = String.format("<img src=\"%s\" />", blob.getMediaLink());
-            response.getWriter().println(imgTag);
-            response.getWriter().println("<br>");
-        }
-
         /* Store images in datastore */
         Datastore datastore = DatastoreOptions.getDefaultInstance().getService();
 
 
         Query<Entity> query =
-            Query.newEntityQueryBuilder().setKind("Images").setOrderBy(OrderBy.desc("message")).build();
+            Query.newEntityQueryBuilder().setKind("Image").setOrderBy(OrderBy.desc("message")).build();
         QueryResults<Entity> results = datastore.run(query); //creates a query as well as results
         List<Images> images = new ArrayList<>();//..a list to store the images
 
         //traverse the query results
-        while (results.hasNext())
+        while (results.hasNext()) 
         {
             Entity entity = results.next();
             String message = entity.getString("message");
-            String link = entity.getString("Url");
-            Images img = new Images(message, link); 
+            String link = entity.getString("Url"); 
+            List<Value<String>> tags = entity.getList("tags");
+            Images img = new Images(message, link, tags); 
             images.add(img);
         }
 
