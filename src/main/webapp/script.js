@@ -42,9 +42,8 @@ function appendText(txt, parent) {
     p.innerText = txt;
     parent.appendChild(p);
 }
-/**
- * Returns a list of random tags (This is temporary)
- */
+
+/* Maybe turn this into (displayAll?) or (display5Random)?
 function returnRandomTags() {
     let indicies = [];
     let out = [];
@@ -57,7 +56,11 @@ function returnRandomTags() {
         }
     }
     return out;
-}
+}*/
+
+function putTagsIntoSet(tagsToAdd) { //Honestly this might be better to do on backend maybe, cause this is doing it each time, but MVP
+    tagsToAdd.forEach(tag => tagSet.add());
+} 
 
 /**
  * Creates buttons given the values of the tagSet.
@@ -120,12 +123,14 @@ async function loadElements() {
         jsonFromServ.forEach(function(src) {
             let parent = document.createElement("li");
             let img = createImage(src.Url);
-            let tags = returnRandomTags(); //this will be the tags
-            tags.forEach(element => parent.classList.add(element)); //classes to de-select
+            let tags = src.tags; //this will be the tags
+            tags.forEach(element => tagSet.add(element.value.replaceAll(" ","-")));            
+            tags.forEach(element => parent.classList.add(element.value.replaceAll(" ", "-"))); //classes to de-select
             parent.appendChild(img);
             appendText(src.message, parent);
             imgList.appendChild(parent);
         });
     }
+    //TODO: make it so it only creates n number of buttons and then an option to show all or random maybe? will handle later
     createButtons();
 }
