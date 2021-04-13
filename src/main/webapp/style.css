@@ -34,7 +34,12 @@ nav li a:hover {
 	background-color:darkgray
 }
 
-#container {
+ul li img {
+    max-width: 400px;
+    max-height:300px;
+}
+
+#container:not(.image-uploads) {
 	padding-top:10px;
 	display: flex;
 	align-items: center;

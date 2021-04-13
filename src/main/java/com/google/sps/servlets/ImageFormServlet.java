@@ -32,7 +32,6 @@ import com.google.protobuf.ByteString;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -55,25 +54,22 @@ public class ImageFormServlet extends HttpServlet {
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, IOException {
-            //UUID uuid = UUID.randomUUID(); //This is a randomly generated ID for the image
-
             String message = getParameter(request, "message", ""); 
             Part filePart = request.getPart("image");
-            //String fileName = uuid.toString(); //This could be changed later if we have a system for it
             String fileName = filePart.getSubmittedFileName();
             
             InputStream fileInputStream = filePart.getInputStream();
-            byte[] imageBytes = fileInputStream.readAllBytes();
 
             String uploadedImageUrl = uploadToCloudStorage(fileName, fileInputStream);
             PrintWriter out = response.getWriter();
 
+            byte[] imageBytes = filePart.getInputStream().readAllBytes(); //
             List<EntityAnnotation> imageLabels = getImageLabels(imageBytes);
 
             List<Value<String>> tagValueList = imageLabels.stream()
                 .map(entityAnnotation -> StringValue.newBuilder(entityAnnotation.getDescription()).build())
                 .collect(toList());
-            
+            //Something breaks, as the upload gets sent 0 bytes (image) instead. Turns out you need 2 input streams. I'm guessing it got closed.
             Datastore datastore = DatastoreOptions.getDefaultInstance().getService(); //get the instance of the Datastore class
             KeyFactory keyFactory = datastore.newKeyFactory().setKind("Image"); //creates a keyFactory with a kind called "Task" and the name keyFactory
             FullEntity imgEntity =
@@ -118,7 +114,9 @@ public class ImageFormServlet extends HttpServlet {
         ByteString byteString = ByteString.copyFrom(imageBytes);
         Image image = Image.newBuilder().setContent(byteString).build();
 
+                
         Feature feature = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
+        System.out.println(feature.getMaxResults() + "");
         AnnotateImageRequest request =
             AnnotateImageRequest.newBuilder().addFeatures(feature).setImage(image).build();
         List<AnnotateImageRequest> requests = new ArrayList<>();
