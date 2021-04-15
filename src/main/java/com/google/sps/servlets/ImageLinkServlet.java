@@ -23,53 +23,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+
+@WebServlet("/comments")
 public class ImageLinkServlet extends HttpServlet
 {
-    // public void doPost(HttpServletRequest request, HttpServletResponse response) 
-    //     throws ServletException, IOException {
-    //         //UUID uuid = UUID.randomUUID(); //This is a randomly generated ID for the image
-
-    //         String message = getParameter(request, "message", ""); 
-    //         Part filePart = request.getPart("image");
-    //         //String fileName = uuid.toString(); //This could be changed later if we have a system for it
-    //         String fileName = filePart.getSubmittedFileName();
-            
-    //         InputStream fileInputStream = filePart.getInputStream();
-
-    //         String uploadedImageUrl = uploadToCloudStorage(fileName, fileInputStream);
-    //         PrintWriter out = response.getWriter();
-            
-    //         Datastore datastore = DatastoreOptions.getDefaultInstance().getService(); //get the instance of the Datastore class
-    //         KeyFactory keyFactory = datastore.newKeyFactory().setKind("Image"); //creates a keyFactory with a kind called "Task" and the name keyFactory
-    //         FullEntity imgEntity =
-    //             Entity.newBuilder(keyFactory.newKey()) //give a key to the Entity
-    //             .set("message", message)//
-    //             .set("Url", uploadedImageUrl)
-    //             .build();
-    //         datastore.put(imgEntity);//store this entity in datastore
-
-    //         //This method will upload to cloudstorage and then get a blob, preferably to use with the message.
-    //         System.out.println("Upload confirmed.");
-    //         response.sendRedirect("/index.html"); //Redirects back home for now, will change to list of images later.
-    //}
+ 
     
     public void getUrl(HttpServletRequest request, HttpServletResponse response) throws IOException 
     {
         String projectId = "spring21-sps-2";
         String bucketName = "spring21-sps-2";
-        
 
-        /* Store images in datastore */
         Datastore datastore = DatastoreOptions.getDefaultInstance().getService();
-
+        String linkAddress = "https://storage.googleapis.com/download/storage/v1/b/spring21-sps-2/o/1562598348321.jpg?generation=1618447547073684&alt=media";
         Query<Entity> query =
-        Query.newEntityQueryBuilder().setKind("Url").setFilter(PropertyFilter.eq("Url", EQUAL))
+        Query.newEntityQueryBuilder().setKind("Image").setFilter(PropertyFilter.eq("Url",linkAddress))
         .build();
         
-        QueryResults<Entity> results = datastore.run(query); //creates a query as well as results
-        List<Images> imagesUrl = new ArrayList<>();//..a list to store the images url
+        QueryResults<Entity> results = datastore.run(query); 
+        List<Images> imagesUrl = new ArrayList<>();
 
-        //traverse the query results
+        
         while (results.hasNext())
         {
             Entity entity = results.next();
