@@ -1,8 +1,7 @@
-package main.java.com.google.sps.servlets;
+package com.google.sps.servlets;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
@@ -12,9 +11,6 @@ import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.Image;
 import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.protobuf.ByteString;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,32 +32,13 @@ public class ImageAnalysisServlet extends HttpServlet {
 
     // Get the file chosen by the user.
     Part filePart = request.getPart("image");
-    String fileName = filePart.getSubmittedFileName();
     InputStream fileInputStream = filePart.getInputStream();
     byte[] imageBytes = fileInputStream.readAllBytes();
-
-    // Upload the file to Cloud Storage and get its URL.
-    //String imageUrl = uploadToCloudStorage(fileName, imageBytes);
 
     // Get the labels of the image that the user uploaded.
     List<EntityAnnotation> imageLabels = getImageLabels(imageBytes);
 
     System.out.println(imageLabels);
-
-    // Output some HTML that shows the data the user entered.
-    // You could also store these in Datastore instead.
-    //response.setContentType("text/html");
-    //PrintWriter out = response.getWriter();
-    //out.println("<p>Here's the image you uploaded:</p>");
-    //out.println("<a href=\"" + imageUrl + "\">");
-    //out.println("<img src=\"" + imageUrl + "\" />");
-    //out.println("</a>");
-    //out.println("<p>Here are the labels we extracted:</p>");
-    //out.println("<ul>");
-    //for (EntityAnnotation label : imageLabels) {
-    //  out.println("<li>" + label.getDescription() + " " + label.getScore());
-    //}
-    //out.println("</ul>");
   }
 
   /**
@@ -91,5 +68,4 @@ public class ImageAnalysisServlet extends HttpServlet {
 
     return imageResponse.getLabelAnnotationsList();
   }
-
 }

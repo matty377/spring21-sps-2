@@ -18,7 +18,6 @@ import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.FullEntity;
 import com.google.cloud.datastore.KeyFactory;
-import com.google.datastore.v1.ArrayValue;
 
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
@@ -31,8 +30,6 @@ import com.google.protobuf.ByteString;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -55,18 +52,14 @@ public class ImageFormServlet extends HttpServlet {
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, IOException {
-            //UUID uuid = UUID.randomUUID(); //This is a randomly generated ID for the image
-
             String message = getParameter(request, "message", ""); 
             Part filePart = request.getPart("image");
-            //String fileName = uuid.toString(); //This could be changed later if we have a system for it
             String fileName = filePart.getSubmittedFileName();
             
             InputStream fileInputStream = filePart.getInputStream();
             byte[] imageBytes = fileInputStream.readAllBytes();
 
             String uploadedImageUrl = uploadToCloudStorage(fileName, fileInputStream);
-            PrintWriter out = response.getWriter();
 
             List<EntityAnnotation> imageLabels = getImageLabels(imageBytes);
 
