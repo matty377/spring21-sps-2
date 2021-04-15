@@ -30,7 +30,6 @@ import com.google.protobuf.ByteString;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -60,7 +59,6 @@ public class ImageFormServlet extends HttpServlet {
             InputStream fileInputStream = filePart.getInputStream();
 
             String uploadedImageUrl = uploadToCloudStorage(fileName, fileInputStream);
-            PrintWriter out = response.getWriter();
 
             byte[] imageBytes = filePart.getInputStream().readAllBytes(); //
             List<EntityAnnotation> imageLabels = getImageLabels(imageBytes);
