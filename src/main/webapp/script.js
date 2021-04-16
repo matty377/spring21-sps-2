@@ -89,9 +89,9 @@ function createButton(tag) {
  */
 var setVisibility = function(element, hide) {
     if (hide) {
-        element.style.visibility = "hidden";
+        element.style.display = "none";
     } else {
-        element.style.visibility = "visible";        
+        element.style.display = "block";        
     }
 }
 
