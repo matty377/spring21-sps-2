@@ -18,7 +18,6 @@ import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.FullEntity;
 import com.google.cloud.datastore.KeyFactory;
-import com.google.datastore.v1.ArrayValue;
 
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
@@ -66,6 +65,8 @@ public class ImageFormServlet extends HttpServlet {
             byte[] imageBytes = filePart.getInputStream().readAllBytes(); //
             List<EntityAnnotation> imageLabels = getImageLabels(imageBytes);
 
+            List<Value<String>> comments = new ArrayList<>();
+
             List<Value<String>> tagValueList = imageLabels.stream()
                 .map(entityAnnotation -> StringValue.newBuilder(entityAnnotation.getDescription()).build())
                 .collect(toList());
@@ -77,6 +78,7 @@ public class ImageFormServlet extends HttpServlet {
                 .set("message", message)//
                 .set("Url", uploadedImageUrl)
                 .set("tags", ListValue.newBuilder().set(tagValueList).build())
+                .set("comments", comments)
                 .build();
             datastore.put(imgEntity);//store this entity in datastore
 

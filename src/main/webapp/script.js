@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const colors = 
-['mint', 'ivory', 'grey', 'fuchsia', 'pink', 'indigo',
-'lime', 'orchid', 'purple', 'yellow', 'black', 'white',
-'turquoise', 'silver', 'sky', 'plum', 'red',
-'lavender', 'green', 'teal'];
 var tagSet = new Set();
 var filtered = false;
+
+/**
+ * Appends paragraph text to given parent
+ * @param {String} txt 
+ * @param {Element} parent 
+ */
+function appendText(txt, parent) {
+    let p = document.createElement("p");
+    p.innerText = txt;
+    parent.appendChild(p);
+}
 
 /**
  * Creates an image
@@ -33,30 +39,9 @@ function createImage(src, parent) {
 }
 
 /**
- * Appends paragraph text to given parent
- * @param {String} txt 
- * @param {Element} parent 
+ * Takes an array of tags and adds to a set
+ * @param {Array} tagsToAdd 
  */
-function appendText(txt, parent) {
-    let p = document.createElement("p");
-    p.innerText = txt;
-    parent.appendChild(p);
-}
-
-/* Maybe turn this into (displayAll?) or (display5Random)?
-function returnRandomTags() {
-    let indicies = [];
-    let out = [];
-    while (indicies.length < 6) {    //Iterate through to add random tags
-        let currIndex = Math.floor(Math.random() * colors.length);
-        if (indicies.indexOf(currIndex) < 0) {
-            out.push(colors[currIndex]);
-            indicies.push(currIndex);
-            tagSet.add(colors[currIndex]);
-        }
-    }
-    return out;
-}*/
 
 function putTagsIntoSet(tagsToAdd) { //Honestly this might be better to do on backend maybe, cause this is doing it each time, but MVP
     tagsToAdd.forEach(tag => tagSet.add());
@@ -126,6 +111,8 @@ async function loadElements() {
             let tags = src.tags; //this will be the tags
             tags.forEach(element => tagSet.add(element.value.replaceAll(" ","-")));            
             tags.forEach(element => parent.classList.add(element.value.replaceAll(" ", "-"))); //classes to de-select
+            img.setAttribute("onClick", "openComments(this)")
+            //tags.forEach(element => img.classList.add(element.value.replaceAll(" ", "-"))); //Add tags to image to retrieve later Actually may not be needed.            
             parent.appendChild(img);
             appendText(src.message, parent);
             imgList.appendChild(parent);
@@ -133,4 +120,106 @@ async function loadElements() {
     }
     //TODO: make it so it only creates n number of buttons and then an option to show all or random maybe? will handle later
     createButtons();
+}
+
+/**
+ * Creates link given image element
+ * @param {Element} img image element
+ */
+function createLink(img) {
+    const destUrl = "comments.html";
+    let params = new URLSearchParams();
+    params.append('imageUrl', encodeURIComponent(img.src));
+    return (destUrl + "?" + params.toString());
+}
+
+/**
+ * Opens a window given the image
+ * @param {Element} img 
+ */
+function openComments(img) {
+    window.location.href = createLink(img);
+}
+
+/**
+ * Decodes a link from a query
+ * @param {String} query query string
+ */
+function decodeLink(query) {
+    let params = new URLSearchParams(query);
+    let imgUrl = params.get('imageUrl');
+    return (decodeURIComponent(imgUrl));
+}
+
+/**
+ * Displays comments on load
+ */
+async function displayComments() {
+    let src = decodeLink(window.location.search.slice(1));
+    let imgContainer = document.getElementById("img-container");
+
+    imgContainer.appendChild(createImage(src));  
+
+    let imgData = {sentText : src};
+    const sendLink = await sendUrl('/comment', imgData);
+
+    let dataOut = await getData();
+    let message = dataOut.message;
+    let comments = dataOut.replies; //Should be an array
+
+    let parent = document.createElement("li");
+    let messageList = document.getElementById("commentList");
+    let replyList = document.getElementById("replyList");
+
+    appendText(message, parent);    
+    messageList.appendChild(parent);
+
+    if (comments[0] != null) {
+        comments.forEach(msg => {
+            let listElem = document.createElement("li");
+            appendText(msg.value, listElem);
+            replyList.appendChild(listElem);
+        });
+    } else {
+        let listElem = document.createElement("li");
+        appendText("No replies :(", listElem);
+        replyList.appendChild(listElem);
+    }
+    
+}
+
+/**
+ * 
+ * @param {url} url url to rend request
+ * @param {Object} data data for body
+ */
+async function sendUrl(url, data) {
+    let response = fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    return response;    
+}
+
+/**
+ * gets Data from server
+ * @param {String} url url to fetch 
+ */
+async function getData(url) {
+    const responseFromServer = await fetch('/comment');
+    const jsonFromServ = await responseFromServer.json();
+    console.log(jsonFromServ);
+    return jsonFromServ[0];
+}
+/**
+ * Sends a comment to the server
+ */
+async function sendMessage() {
+    let imgSrc = decodeLink(window.location.search.slice(1)); //Image source, used to find datastore object
+    let message = document.getElementById("reply").value;
+    let messageData = {sentUrl : imgSrc, sentMsg : message}
+    const sendStuff = await sendUrl('/post-comment', messageData);    
 }

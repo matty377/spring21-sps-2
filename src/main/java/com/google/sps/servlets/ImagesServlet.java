@@ -58,7 +58,8 @@ public class ImagesServlet extends HttpServlet {
             String message = entity.getString("message");
             String link = entity.getString("Url"); 
             List<Value<String>> tags = entity.getList("tags");
-            Images img = new Images(message, link, tags); 
+            List<Value<String>> comments = entity.getList("comments");
+            Images img = new Images(message, link, tags, comments);
             images.add(img);
         }
 

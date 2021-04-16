@@ -44,5 +44,28 @@ ul li img {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	text-align: center;
+    text-align: center;
+    flex:top;
 }
+
+#commentsContainer {
+	padding-top:10px;
+	justify-content: center;
+    text-align: center;
+    flex:top;
+}
+
+#img-container {
+    align-items:flex-start;
+}
+
+#msgContainer {
+    align-items:flex-end;
+}
+
+#reply-container {
+    align-items:flex-end;
+    justify-content: center;
+}
+
+
