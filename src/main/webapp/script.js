@@ -105,6 +105,7 @@ async function loadElements() {
     console.log(jsonFromServ);
     const doc = document;
     if (jsonFromServ.length > 0) {
+        imgList.removeChild(imgList.children[0]); // Remove our helpful loading cat. Meow.        
         jsonFromServ.forEach(function(src) {
             let parent = document.createElement("li");
             let img = createImage(src.Url);
