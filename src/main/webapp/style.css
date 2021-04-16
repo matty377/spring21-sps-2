@@ -68,4 +68,6 @@ ul li img {
     justify-content: center;
 }
 
-
+#imgList li {
+    cursor: pointer;
+}
