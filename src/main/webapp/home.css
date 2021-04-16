@@ -1,0 +1,45 @@
+/* CSS Document */
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+body {
+    font-family: 'Roboto', sans-serif;
+    border-radius: 16px;
+    background: url(texture-background.jpg);
+}
+
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+nav ul {
+	background-color:lightgray;
+	align-content:center;
+}
+nav li {
+	float: left;
+}
+
+nav li a {
+	display: block;
+	color:rgb(0, 0, 0);
+	text-align:center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+nav li a:hover {
+	background-color:rgba(175, 173, 24, 0.521);
+}
+
+.currentPage {
+	background-color:rgb(184, 208, 214)
+}
+
+#container {
+	padding-top:10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+    text-align: center; 
+}

@@ -1,7 +1,10 @@
 /* CSS Document */
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 body {
-	font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif;
+    background-image: url(blue_gradian.png);
+    background-repeat: repeat-x;
+border-style: hidden;    
 }
 
 ul {
@@ -11,11 +14,12 @@ ul {
 	overflow: hidden;
 }
 nav ul {
+    border-style: hidden;
 	background-color:lightgray;
 	align-content:center;
 }
 nav li {
-	float: left;
+    float: left;
 }
 
 nav li a {
@@ -27,11 +31,13 @@ nav li a {
 }
 
 nav li a:hover {
-	background-color:gray;
+    background-color:gray;
+    
 }
 
 .currentPage {
-	background-color:darkgray
+    background-color:darkgray
+    
 }
 
 #container {
@@ -39,5 +45,15 @@ nav li a:hover {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	text-align: center;
+    text-align: center;
+
+}
+
+#AboutUsContainer {
+	padding-top:10px;
+	display: auto;
+	align-items: auto;
+	justify-content: center;
+    text-align: auto;
+
 }
