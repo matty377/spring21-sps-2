@@ -14,6 +14,7 @@
 
 var tagSet = new Set();
 var filtered = false;
+var buttonArray = [];
 
 /**
  * Appends paragraph text to given parent
@@ -51,12 +52,24 @@ function putTagsIntoSet(tagsToAdd) { //Honestly this might be better to do on ba
  * Creates buttons given the values of the tagSet.
  */
 function createButtons() {
+    
     for (let tagName of tagSet.values()) {
-        let buttonDiv = document.getElementById("buttons");
-        buttonDiv.appendChild(createButton(tagName));
+        let button = createButton(tagName);
+        button.id = tagName;
+        buttonArray.push(button);
     }
+    createFiveRandomButtons();
 }
 
+function createFiveRandomButtons() {
+    let buttonDiv = document.getElementById("buttons");
+    let collectionOfCurrentButtons = buttonDiv.childNodes;
+    collectionOfCurrentButtons.forEach(node => buttonDiv.removeChild(node));
+    for (let i = 0; i < 5; i++) {
+        buttonDiv.appendChild(buttonArray[Math.floor(Math.random()*buttonArray.length)]);
+    }
+    
+}
 /**
  * Creates button using tag.
  * @param {String} tag tag of button
